@@ -1,36 +1,52 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import MainView from "@/views/MainView.vue";
 
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-  mode: 'history',
-  base: import.meta.env.BASE_URL,
-  routes: [
-    {
-      path: "/",
-      redirect: "/validations"
-    },
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    {
-      path: '/validations',
-      name: 'validations',
-      component: () => import("../views/Validations.vue")
-    }
-  ]
+    mode: 'history',
+    base: import.meta.env.BASE_URL,
+    routes: [
+        {
+            path: "/",
+            redirect: "/menu"
+        },
+        {
+            path: '/',
+            component: {
+                render(c) { return c('router-view') }
+            },
+            children: [
+                {
+                    path: '/menu',
+                    name: 'menu',
+                    component: MainView,
+                    redirect: { name: 'validation'},
+                    children: [
+                        {
+                            path: '/validate',
+                            name: 'validation',
+                            component: () => import('../views/Validations.vue')
+                        },
+                        {
+                            path: '/input/text',
+                            name: 'inputText',
+                            component: () => import('../views/input_validations/InputText.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/:catchAll(.*)',
+                    name: 'NotFound',
+                    component: () => import('../views/NotFound.vue')
+                }
+            ]
+        },
+
+
+
+    ]
 })
 
 export default router
