@@ -1,10 +1,5 @@
 <template>
   <div>
-    <b-navbar type="dark" variant="dark">
-      <b-navbar-nav>
-        <b-nav-item href="#">Validaciones</b-nav-item>
-      </b-navbar-nav>
-    </b-navbar>
     <h3 class="text-center mt-3">Validations form</h3>
     <b-container fluid class="mt-5">
       <b-form>
