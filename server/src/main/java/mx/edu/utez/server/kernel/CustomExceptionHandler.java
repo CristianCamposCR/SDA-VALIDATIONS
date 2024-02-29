@@ -1,5 +1,6 @@
 package mx.edu.utez.server.kernel;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,8 +18,8 @@ public class CustomExceptionHandler {
     @ResponseBody
     public ResponseEntity<CustomResponse<?>> processUnmergeException(final MethodArgumentNotValidException ex) {
 
-        List list = ex.getBindingResult().getAllErrors().stream()
-                .map(fieldError -> fieldError.getDefaultMessage())
+        List<String> list = ex.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
 
         CustomResponse<?> res = new CustomResponse<>(

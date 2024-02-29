@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DialectOverride;
+import mx.edu.utez.server.modules.genre.model.Genre;
+import mx.edu.utez.server.modules.martialStatus.model.MartialStatus;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +28,30 @@ public class Person {
     @Column(columnDefinition = "VARCHAR(50)")
     private String lastname;
 
+    @Column(columnDefinition = "DATE", nullable = false)
+    private LocalDateTime birthDay;
+
+    @Column(columnDefinition = "VARCHAR(10)", nullable = false)
+    private String phoneNumber;
+
+    @Column(columnDefinition = "VARCHAR(150)", nullable = false)
+    private String email;
+
     @Column(columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status;
+
+    @Column(columnDefinition = "INTEGER", nullable = false)
+    private Long numberOfSons;
+
+    @Column(columnDefinition = "VARCHAR(11)")
+    private String nss;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "genre_id", nullable = false)
+    private Genre genre;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "martial_status_id", nullable = false)
+    private MartialStatus martialStatus;
+
 }
