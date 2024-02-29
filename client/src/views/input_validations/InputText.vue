@@ -38,6 +38,7 @@
                 v-model="v$.form.name.$model"
                 @blur="v$.form.name.$touch()"
                 :state="v$.form.name.$dirty ? !v$.form.name.$error : null"
+                trim
               />
               <h5 class="mt-3">Objeto de vuelidate</h5>
               {{ v$.form }}
@@ -84,7 +85,7 @@
 <script>
 import Vue from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { required, alfa } from "@vuelidate/validators";
+import { required, alphaNum } from "@vuelidate/validators";
 
 export default Vue.extend({
   name: "InputText",
@@ -117,7 +118,15 @@ export default Vue.extend({
   },
   validations: {
     form: {
-      name: { required, alfa },
+      name: {
+        required,
+        valid: function (value) {
+          const isValid =
+            /^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\-_ \s]+$/.test(value);
+            // pettern que permite caracteres de la a - z mayus y minus todos los acentos dierisis y la ñ
+          return isValid;
+        },
+      },
     },
   },
 });
