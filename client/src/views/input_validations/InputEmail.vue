@@ -3,7 +3,7 @@
 
     <b-card no-body>
       <b-card-header v-b-toggle.collapseValidations>
-        <span class="border-bottom text-primary" >Información de validación del campo</span>
+        <span class="border-bottom text-primary" >Información de validación de un campo de texto</span>
       </b-card-header>
       <b-collapse id="collapseValidations">
         <b-card-body>
@@ -11,9 +11,12 @@
             <ul class="px-3">
               <li>El valor del campo es requerido.</li>
               <li>Permite mayúsculas y minúsculas.</li>
-              <li>Permite espacios en blanco entre las palabra</li>
-              <li>Permite guiones medios o bajos</li>
-              <li>Permite acentos  y la letra ñ [ÁÉÍÓÚáéíóúñÑäëïöü] </li>
+              <li>Los caracteres ingresados se convierten a minúsculas.</li>
+              <li>No permite dos puntos seguidos.</li>
+              <li>No permite espacios en blanco</li>
+              <li>Los dominios permitidos son: gmail.com, hotmail.com, yahoo.com, utez.edu.mx</li>
+              <li>El formato del correo debe ser válido, entiendo por válido que debe tener un @ y un dominio.</li>
+              <li>Los caracteres permitidos son: [ @./*-?']</li>
             </ul>
           </b-card-text>
         </b-card-body>
@@ -38,16 +41,16 @@
 
     <b-card class="mt-3">
       <b-form @submit.prevent="onSubmit">
-        <b-form-group>
-          <label for="name">Nombre:</label>
+        <b-form-group label="Correo electrónico" label-for="email">
           <b-form-input
-              id="name"
+              id="email"
               type="text"
-              placeholder="Juan"
+              placeholder="juan@gmail.com"
               required
               v-model="v$.form.name.$model"
               @blur="v$.form.name.$touch()"
               :state="v$.form.name.$dirty ? !v$.form.name.$error : null"
+              :formatter="value => value.toLowerCase()"
               trim
           />
 
@@ -86,7 +89,7 @@
 <script>
 import Vue from "vue";
 import {useVuelidate} from "@vuelidate/core";
-import {required, alphaNum, helpers, maxLength, minLength} from "@vuelidate/validators";
+import {required, alphaNum, helpers, maxLength, minLength, email} from "@vuelidate/validators";
 
 export default Vue.extend({
   name: "InputText",
@@ -111,8 +114,6 @@ export default Vue.extend({
       }
 
 
-
-
       this.simulationShow = true;
       this.simulationSend = false;
       setTimeout(() => {
@@ -134,16 +135,22 @@ export default Vue.extend({
             required
         ),
         valid: helpers.withMessage(
-            'El campo no es válido, solo se permiten letras y los caracteres especiales: - _',
-            helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\-_ \s]+$/)
+            "El formato del correo no es válido",
+            email
         ),
-        maxLength: helpers.withMessage(
-            "El campo no puede tener más de 50 caracteres",
-            maxLength(50)
+        whiteListDomains: helpers.withMessage(
+            "El dominio no es válido",
+            value => {
+              if(!value.includes("@")) return true
+              return ["gmail.com", "hotmail.com", "yahoo.com", "utez.edu.mx"].includes(value.split("@")[1])
+            }
         ),
-        minLength: helpers.withMessage(
-            "El campo no puede tener menos de 3 caracteres",
-            minLength(3)
+        validCharacters: helpers.withMessage(
+            "El campo no es válido, solo se permiten letras y los caracteres especiales [ @./*-?']",
+            value => {
+              if(!value) return true
+              return /^[a-zA-Z0-9@./*-]+$/.test(value)
+            }
         ),
       },
     },

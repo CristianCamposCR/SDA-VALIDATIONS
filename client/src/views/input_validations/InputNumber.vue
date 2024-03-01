@@ -3,7 +3,7 @@
 
     <b-card no-body>
       <b-card-header v-b-toggle.collapseValidations>
-        <span class="border-bottom text-primary">Información de validación de un campo de texto</span>
+        <span class="border-bottom text-primary">Información de validación del campo</span>
       </b-card-header>
       <b-collapse id="collapseValidations">
         <b-card-body>
