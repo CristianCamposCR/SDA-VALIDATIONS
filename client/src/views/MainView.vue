@@ -37,6 +37,9 @@
       <div v-else-if="selected === 'inputMultiSelect'">
         <InputMultiSelect/>
       </div>
+      <div v-else-if="selected === 'inputDate'">
+        <InputDate/>
+      </div>
 
     </section>
 
@@ -55,17 +58,19 @@ export default {
     InputNumber: () => import('./input_validations/InputNumber.vue'),
     InputEmail: () => import('./input_validations/InputEmail.vue'),
     InputMultiSelect: () => import('./input_validations/InputMultiSelect.vue'),
+    InputDate: () => import('./input_validations/InputDates.vue'),
 
   },
   data() {
     return {
-      selected: 'inputMultiSelect',
+      selected: 'inputDate',
       options: [
         {value: 'validation', text: 'Formulario A'},
         {value: 'inputText', text: 'Campo de texto'},
         {value: 'inputNumber', text: 'Campo numérico'},
         {value: 'inputEmail', text: 'Campo de correo'},
         {value: 'inputMultiSelect', text: 'Campo MultiSelect'},
+        {value: 'inputDate', text: 'Campo de fecha'},
       ]
     };
   },
