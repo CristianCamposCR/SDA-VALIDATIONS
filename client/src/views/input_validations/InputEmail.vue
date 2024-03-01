@@ -149,7 +149,7 @@ export default Vue.extend({
             "El campo no es válido, solo se permiten letras y los caracteres especiales [ @./*-?']",
             value => {
               if(!value) return true
-              return /^[a-zA-Z0-9@./*-]+$/.test(value)
+              return /^[a-zA-Z0-9@./*-_]+$/.test(value)
             }
         ),
       },
