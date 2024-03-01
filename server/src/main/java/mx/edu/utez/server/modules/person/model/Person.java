@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import mx.edu.utez.server.modules.genre.model.Genre;
 import mx.edu.utez.server.modules.martialStatus.model.MartialStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,15 +29,15 @@ public class Person {
     private String lastname;
 
     @Column(columnDefinition = "DATE", nullable = false)
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
-    @Column(columnDefinition = "VARCHAR(10)", nullable = false)
+    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private String phoneNumber;
 
     @Column(columnDefinition = "VARCHAR(150)", nullable = false)
     private String email;
 
-    @Column(columnDefinition = "TINYINT DEFAULT 1")
+    @Column(columnDefinition = "TINYINT DEFAULT 1", nullable = false)
     private Boolean status;
 
     @Column(columnDefinition = "INTEGER", nullable = false)
