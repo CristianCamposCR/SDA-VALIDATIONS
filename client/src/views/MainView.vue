@@ -22,7 +22,16 @@
       </div>
 
 
-        <router-view/>
+      <div v-if="selected === 'validation'">
+        <Validation/>
+      </div>
+      <div v-else-if="selected === 'inputText'">
+        <InputText/>
+      </div>
+      <div v-else-if="selected === 'inputNumber'">
+        <InputNumber/>
+      </div>
+
     </section>
 
 
@@ -34,20 +43,23 @@
 <script>
 export default {
   name: "MainView",
+  components: {
+    Validation: () => import('@/views/Validations.vue'),
+    InputText: () => import('./input_validations/InputText.vue'),
+    InputNumber: () => import('./input_validations/InputNumber.vue'),
+
+
+  },
   data() {
     return {
-      selected: 'validation',
+      selected: 'inputNumber',
       options: [
         {value: 'validation', text: 'Formulario A'},
         {value: 'inputText', text: 'Campo de texto'},
+        {value: 'inputNumber', text: 'Campo numérico'},
       ]
     };
   },
-  methods: {
-    handleShowComponent() {
-      this.$router.push({name: this.selected});
-    }
-  }
 }
 </script>
 
