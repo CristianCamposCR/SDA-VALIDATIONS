@@ -58,7 +58,19 @@
                 type="text"
                 placeholder="Roman"
                 required
+                trim
+                v-model="v$.form.lastname.$model"
+                :state="
+                  v$.form.lastname.$dirty ? !v$.form.lastname.$error : null
+                "
+                @blur="v$.form.lastname.$touch()"
               />
+              <b-form-invalid-feedback
+                v-for="error in v$.form.lastname.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
         </b-row>
@@ -114,6 +126,21 @@
               <b-form-datepicker
                 id="example-datepicker"
                 class="mb-2"
+                placeholder="Selecciona una fecha"
+                :label-help="null"
+                v-model="v$.form.birthDate.$model"
+                :state="
+                  v$.form.birthDate.$dirty ? !v$.form.birthDate.$error : null
+                "
+                @blur="v$.form.birthDate.$touch()"
+                label-current-month="Fecha máxima"
+                hide-header
+                :date-format-options="{
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                }"
+                :max="maxDate"
               ></b-form-datepicker>
             </b-form-group>
           </b-col>
@@ -206,6 +233,8 @@ import {
   minLength,
   maxLength,
   requiredIf,
+  minValue,
+  maxValue,
 } from "@vuelidate/validators";
 export default Vue.extend({
   name: "validations",
@@ -215,7 +244,13 @@ export default Vue.extend({
     };
   },
   data() {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const maxDate = new Date(today);
+    maxDate.setFullYear(maxDate.getFullYear() - 18);
     return {
+      maxDate: maxDate,
+      fecha: null,
       genders: [
         { name: "Masculino", id: 1 },
         { name: "Femenino", id: 2 },
@@ -271,8 +306,8 @@ export default Vue.extend({
       name: {
         required: helpers.withMessage("Campo obligatorio", required),
         valid: helpers.withMessage(
-          "Campo inválido, solo se aceptan letras y -_",
-          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\-_ \s]+$/)
+          "Campo inválido, solo se aceptan letras y puntos",
+          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
         ),
         minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
         maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
@@ -280,16 +315,20 @@ export default Vue.extend({
       surname: {
         required: helpers.withMessage("Campo obligatorio", required),
         valid: helpers.withMessage(
-          "Campo inválido, solo se aceptan letras y -_",
-          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\-_ \s]+$/)
+          "Campo inválido, solo se aceptan letras y puntos",
+          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
         ),
         minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
         maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
       },
       lastname: {
-        valid: (value) => {
-          return /^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\-_ \s]+$/.test(value);
-        },
+        valid: helpers.withMessage(
+          "Campo inválido, solo se aceptan letras y puntos",
+          (value) => {
+            if (!value) return true;
+            return /^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/.test(value);
+          }
+        ),
       },
       email: {
         required: helpers.withMessage("Campo obligatorio", required),
@@ -299,10 +338,18 @@ export default Vue.extend({
         required: helpers.withMessage("Campo obligatorio", required),
         validFormat: helpers.withMessage(
           "Teléfono inválido",
-          helpers.regex(
-            /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?(\d{10})\s*$/
-          )
+          helpers.regex(/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/)
         ),
+      },
+      birthDate: {
+        required,
+        maxValue: helpers.withMessage("Sobrepasa la fecha máxima", (value) => {
+          const año = new Date().getFullYear() - 18;
+          const mes = String(new Date().getMonth() + 1).padStart(2, "0"); // Sumar 1 al mes porque los meses en JavaScript van de 0 a 11
+          const día = String(new Date().getDate()).padStart(2, "0");
+          const fechaFormateada = `${año}-${mes}-${día}`;
+          return value <= fechaFormateada;
+        }),
       },
     },
   },
