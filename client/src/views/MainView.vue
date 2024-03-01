@@ -31,6 +31,9 @@
       <div v-else-if="selected === 'inputNumber'">
         <InputNumber/>
       </div>
+      <div v-else-if="selected === 'inputEmail'">
+        <InputEmail/>
+      </div>
 
     </section>
 
@@ -47,16 +50,18 @@ export default {
     Validation: () => import('@/views/Validations.vue'),
     InputText: () => import('./input_validations/InputText.vue'),
     InputNumber: () => import('./input_validations/InputNumber.vue'),
+    InputEmail: () => import('./input_validations/InputEmail.vue'),
 
 
   },
   data() {
     return {
-      selected: 'inputNumber',
+      selected: 'inputEmail',
       options: [
         {value: 'validation', text: 'Formulario A'},
         {value: 'inputText', text: 'Campo de texto'},
         {value: 'inputNumber', text: 'Campo numérico'},
+        {value: 'inputEmail', text: 'Campo de correo'},
       ]
     };
   },
