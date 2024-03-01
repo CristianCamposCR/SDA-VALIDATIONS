@@ -141,24 +141,46 @@
                   day: 'numeric',
                 }"
                 :max="maxDate"
+                @hide="v$.form.birthDate.$touch()"
               ></b-form-datepicker>
+              <b-form-invalid-feedback
+                v-for="error in v$.form.birthDate.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
           <b-col cols="12" sm="12" md="4">
             <b-form-group>
               <label>Genero:&nbsp;<b class="text-danger">*</b></label>
               <multi-select
-                placeholder="Selecciona los impuestos necesarios"
+                :class="{
+                  'is-invalid': v$.form.gender.$error,
+                  'is-valid': !v$.form.gender.$invalid,
+                }"
+                v-model="v$.form.gender.$model"
+                placeholder="Selecciona un género"
                 label="name"
                 :options="genders"
                 track-by="name"
                 :multiple="false"
-                :taggable="true"
                 selectLabel="Presiona enter para seleccionar"
                 deselectLabel="Presiona enter para eliminar"
                 selectedLabel="Seleccionado"
-                :showNoOptions="false"
-              ></multi-select>
+                @close="v$.form.gender.$touch()"
+              >
+                <template slot="noResult">No hay resultados</template>
+                <template slot="noOptions"
+                  >No hay opciones</template
+                ></multi-select
+              >
+              <b-form-invalid-feedback
+                v-for="error in v$.form.gender.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
           <b-col cols="12" sm="12" md="4" class="mt-4">
@@ -226,6 +248,7 @@
 <script>
 import Vue from "vue";
 import { useVuelidate } from "@vuelidate/core";
+import moment from "moment/moment";
 import {
   required,
   email,
@@ -256,7 +279,11 @@ export default Vue.extend({
         { name: "Femenino", id: 2 },
       ],
       civilStatus: [
-        { text: "Soltero/a", value: "Soltero" },
+        {
+          text: "Soltero/a",
+          value: "Soltero",
+          notEnabled: true,
+        },
         { text: "Casado/a", value: "Casado" },
         { text: "Divorciado/a", value: "Divorciado" },
         { text: "Viudo/a", value: "Viudo" },
@@ -344,14 +371,47 @@ export default Vue.extend({
       birthDate: {
         required,
         maxValue: helpers.withMessage("Sobrepasa la fecha máxima", (value) => {
-          const año = new Date().getFullYear() - 18;
-          const mes = String(new Date().getMonth() + 1).padStart(2, "0"); // Sumar 1 al mes porque los meses en JavaScript van de 0 a 11
-          const día = String(new Date().getDate()).padStart(2, "0");
-          const fechaFormateada = `${año}-${mes}-${día}`;
-          return value <= fechaFormateada;
+          // Haciando la conversión y la comparación a mano
+
+          // const año = new Date().getFullYear() - 18;
+          // const mes = String(new Date().getMonth() + 1).padStart(2, "0"); // Sumar 1 al mes porque los meses en JavaScript van de 0 a 11
+          // const día = String(new Date().getDate()).padStart(2, "0");
+          // const fechaFormateada = `${año}-${mes}-${día}`;
+          // return value <= fechaFormateada;
+
+          //Usando la librería de moment
+
+          //Se recomienda el uso de alguna librería para el manejo de fechas, como lo es moment, facilita mucho el trabajo y evita errores
+          //En este caso value es un string de una fecha en formtato "YYYY-MM-DD" y para compararla tendriamos que obtener la fecha actual
+          // y luego formatearla, moment nos evita eso ya que puedo hacer la comparación directa entre el string y un Date
+          return moment(value).isSameOrBefore(
+            new Date(
+              new Date().getFullYear() - 18,
+              new Date().getMonth(),
+              new Date().getDate()
+            )
+          );
         }),
       },
+      gender: {
+        required: helpers.withMessage("Campo obligatorio", required),
+      },
+      // civilStatus: {
+      //   required: helpers.withMessage(
+      //     "Campos obligatorio",
+      //     requiredIf(this.gender.id === 1)
+      //   ),
+      // },
     },
   },
 });
 </script>
+
+<style>
+.is-invalid > .multiselect__tags {
+  border-color: #dc3545;
+}
+.is-valid > .multiselect__tags {
+  border-color: #28a745;
+}
+</style>
