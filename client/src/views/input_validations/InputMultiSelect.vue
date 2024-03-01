@@ -3,19 +3,14 @@
 
     <b-card no-body>
       <b-card-header v-b-toggle.collapseValidations>
-        <span class="border-bottom text-primary" >Información de validación de un campo de texto</span>
+        <span class="border-bottom text-primary">Información de validación de un campo de texto</span>
       </b-card-header>
       <b-collapse id="collapseValidations">
         <b-card-body>
           <b-card-text>
             <ul class="px-3">
               <li>El valor del campo es requerido.</li>
-              <li>Los caracteres ingresados se convierten a minúsculas.</li>
-              <li>No permite dos puntos seguidos.</li>
-              <li>No permite espacios en blanco</li>
-              <li>Los dominios permitidos son: gmail.com, hotmail.com, yahoo.com, utez.edu.mx</li>
-              <li>El formato del correo debe ser válido, entiendase valido a que debe tener un @ y un dominio.</li>
-              <li>Los caracteres permitidos son: [ @./*-?']</li>
+              <li>Solo se pueden seleccionar hasta 2 opciones.</li>
             </ul>
           </b-card-text>
         </b-card-body>
@@ -25,7 +20,7 @@
       <b-card-header v-b-toggle.collapseValidationFunction>
         <span class="border-bottom text-primary">Acerca de las acciones al campo</span>
       </b-card-header>
-      <b-collapse id="collapseValidationFunction" >
+      <b-collapse id="collapseValidationFunction">
         <b-card-body>
           <b-card-text>
             <ul class="px-3">
@@ -40,33 +35,36 @@
 
     <b-card class="mt-3">
       <b-form @submit.prevent="onSubmit">
-        <b-form-group label="Correo electrónico" label-for="email">
-          <b-form-input
-              id="email"
-              type="text"
-              placeholder="juan@gmail.com"
-              required
-              v-model="v$.form.name.$model"
-              @blur="v$.form.name.$touch()"
-              :state="v$.form.name.$dirty ? !v$.form.name.$error : null"
-              :formatter="value => value.toLowerCase()"
-              trim
-          />
+        <b-form-group>
+          <label for="animals">Animales:</label>
 
-          <b-form-invalid-feedback v-for="error in v$.form.name.$errors" :key="error.$uid">
+          <multi-select
+              :class="{ 'is-invalid': v$.form.selected.$error, 'is-valid': !v$.form.selected.$invalid }"
+              placeholder="Selecciona uno o varios animales"
+              :options="['Perro', 'Gato', 'Conejo', 'Pez', 'Pájaro', 'Tortuga', 'Cerdo', 'Vaca', 'Cabra', 'Oveja', 'Conejo']"
+              :multiple="multiple"
+              selectLabel="Presiona enter para seleccionar"
+              deselectLabel="Presiona enter para eliminar"
+              selectedLabel="Seleccionado"
+              v-model="form.selected"
+              @close="v$.form.selected.$touch()"
+          >
+            <template slot="noResult">No hay resultados</template>
+            <template slot="noOptions">No hay opciones</template>
+          </multi-select>
+
+          <!--    Hack to show the invalid feedback      -->
+          <b-form-input type="hidden" :state="v$.form.selected.$dirty ? !v$.form.selected.$error : null" v-show="false"/>
+
+          <b-form-invalid-feedback v-for="error in v$.form.selected.$errors" :key="error.$uid">
             {{ error.$message }}
           </b-form-invalid-feedback>
-
-
         </b-form-group>
 
         <!--    message to simulate the sending of the form    -->
         <div v-if="simulationShow">
           <div v-if="simulationSend" class="text-success">
             <strong>¡Enviado!</strong> El formulario ha sido enviado.
-            <p>
-              <small>Nombre:&nbsp; {{ form.name }}</small>
-            </p>
           </div>
           <div v-else class="text-secondary">
             <strong>Cargando...</strong> Espere un momento.
@@ -91,14 +89,15 @@ import {useVuelidate} from "@vuelidate/core";
 import {required, alphaNum, helpers, maxLength, minLength, email} from "@vuelidate/validators";
 
 export default Vue.extend({
-  name: "InputEmail",
+  name: "InputMultiSelect",
   setup() {
     return {v$: useVuelidate()};
   },
   data() {
     return {
+      multiple: true,
       form: {
-        name: "",
+        selected: [],
       },
       simulationShow: false,
       simulationSend: false,
@@ -128,33 +127,22 @@ export default Vue.extend({
   },
   validations: {
     form: {
-      name: {
-        required: helpers.withMessage(
-            "El campo es requerido",
-            required
-        ),
-        valid: helpers.withMessage(
-            "El formato del correo no es válido",
-            email
-        ),
-        whiteListDomains: helpers.withMessage(
-            "El dominio no es válido",
-            value => {
-              if(!value.includes("@")) return true
-              return ["gmail.com", "hotmail.com", "yahoo.com", "utez.edu.mx"].includes(value.split("@")[1])
-            }
-        ),
-        validCharacters: helpers.withMessage(
-            "El campo no es válido, solo se permiten letras y los caracteres especiales [ @./*-?']",
-            value => {
-              if(!value) return true
-              return /^[a-zA-Z0-9@./*-_]+$/.test(value)
-            }
-        ),
+      selected: {
+        required: helpers.withMessage("Selecciona al menos una opción", required),
+        maxLength: helpers.withMessage("Selecciona a lo mucho 2 opciones", maxLength(2)),
       },
     },
   },
 });
 </script>
 
-<style scoped></style>
+<!-- This is the style for the multiselect but in all app-->
+<style>
+.is-invalid>.multiselect__tags{
+  border-color: #dc3545;
+}
+.is-valid>.multiselect__tags{
+  border-color: #28a745;
+}
+</style>
+
