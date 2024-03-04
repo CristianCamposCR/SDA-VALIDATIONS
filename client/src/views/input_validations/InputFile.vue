@@ -184,31 +184,52 @@ export default Vue.extend({
         ),
         image: helpers.withMessage(
             "El campo solo acepta archivos de tipo imagen",
-            value => value && value.type.includes("image")
+            value => {
+              if (!value) return true
+              return value && value.type.includes("image")
+            }
         ),
         size: helpers.withMessage(
             "El campo solo acepta archivos con un tamaño menor a 2MB",
-            value => value && value.size < 2000000
+            value =>{
+              if (!value) return true
+              return value && value.size < 2000000
+            }
         ),
         sizeMin: helpers.withMessage(
             "El campo solo acepta archivos con un tamaño mayor a 100bytes",
-            value => value && value.size > 100
+            value =>{
+              if (!value) return true
+              return value && value.size > 100
+            }
         ),
         width: helpers.withMessage(
             "El campo solo acepta archivos con un ancho mayor a 100px y menor a 2000px",
-            (value, {imageDimensions}) => value && imageDimensions.width > 100 && imageDimensions.width < 20000
+            (value, {imageDimensions}) => {
+              if (!value) return true
+              return value && imageDimensions.width > 100 && imageDimensions.width < 20000
+            }
         ),
         height: helpers.withMessage(
             "El campo solo acepta archivos con un alto mayor a 100px y menor a 2000px",
-            (value, {imageDimensions}) => value && imageDimensions.height > 100 && imageDimensions.height < 20000
+            (value, {imageDimensions}) => {
+              if (!value) return true
+              return value && imageDimensions.height > 100 && imageDimensions.height < 20000
+            }
         ),
         name: helpers.withMessage(
             "El campo solo acepta archivos con un nombre de archivo que no contenga espacios en blanco",
-            value => value && !value.name.includes(" ")
+            value => {
+              if (!value) return true
+              return value && !value.name.includes(" ")
+            }
         ),
         nameSpecial: helpers.withMessage(
             "El campo solo acepta archivos con un nombre de archivo que no contenga caracteres especiales",
-            value => value && !value.name.match(/[!@#$%^&*(),?":{}|<>]/)
+            value => {
+              if (!value) return true
+              return value && !value.name.match(/[!@#$%^&*(),?":{}|<>]/)
+            }
         ),
       },
       imageDimensions:{
