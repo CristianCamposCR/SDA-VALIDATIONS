@@ -16,30 +16,18 @@
             label-for="inputOptions"
             description="Selecciona una de las diversas opciones."
         >
-          <b-form-select v-model="selected" :options="options" id="inputOptions"  @input="handleShowComponent">
-          </b-form-select>
+          <b-form-select v-model="selected" :options="options" id="inputOptions"></b-form-select>
         </b-form-group>
       </div>
 
-
-      <div v-if="selected === 'validation'">
-        <Validation/>
-      </div>
-      <div v-else-if="selected === 'inputText'">
-        <InputText/>
-      </div>
-      <div v-else-if="selected === 'inputNumber'">
-        <InputNumber/>
-      </div>
-      <div v-else-if="selected === 'inputEmail'">
-        <InputEmail/>
-      </div>
-      <div v-else-if="selected === 'inputMultiSelect'">
-        <InputMultiSelect/>
-      </div>
-      <div v-else-if="selected === 'inputDate'">
-        <InputDate/>
-      </div>
+      <div v-if="selected === 'validation'"><Validation/></div>
+      <div v-else-if="selected === 'inputText'"><InputText/></div>
+      <div v-else-if="selected === 'inputNumber'"><InputNumber/></div>
+      <div v-else-if="selected === 'inputEmail'"><InputEmail/></div>
+      <div v-else-if="selected === 'inputMultiSelect'"><InputMultiSelect/></div>
+      <div v-else-if="selected === 'inputDate'"><InputDate/></div>
+      <div v-else-if="selected === 'inputPassword'"><InputPassword/></div>
+      <div v-else-if="selected === 'inputFile'"><InputFile/></div>
 
     </section>
 
@@ -59,11 +47,13 @@ export default {
     InputEmail: () => import('./input_validations/InputEmail.vue'),
     InputMultiSelect: () => import('./input_validations/InputMultiSelect.vue'),
     InputDate: () => import('./input_validations/InputDates.vue'),
+    InputPassword: () => import('./input_validations/InputPassword.vue'),
+    InputFile: () => import('./input_validations/InputFile.vue'),
 
   },
   data() {
     return {
-      selected: 'inputDate',
+      selected: 'inputFile',
       options: [
         {value: 'validation', text: 'Formulario A'},
         {value: 'inputText', text: 'Campo de texto'},
@@ -71,6 +61,8 @@ export default {
         {value: 'inputEmail', text: 'Campo de correo'},
         {value: 'inputMultiSelect', text: 'Campo MultiSelect'},
         {value: 'inputDate', text: 'Campo de fecha'},
+        {value: 'inputPassword', text: 'Campo de contraseña'},
+        {value: 'inputFile', text: 'Campo de archivo'},
       ]
     };
   },
