@@ -46,6 +46,9 @@ public class Person {
     @Column(columnDefinition = "VARCHAR(11)")
     private String nss;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String softSkills;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "genre_id", nullable = false)
     private Genre genre;

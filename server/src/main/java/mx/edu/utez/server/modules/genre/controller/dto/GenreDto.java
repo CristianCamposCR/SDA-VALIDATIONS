@@ -15,8 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class GenreDto {
+    // @Positive: Valida que el valor sea positivo y mayor a 0
+    // - Creación
+    // - Actualización
     @Positive(groups = {Validations.Save.class, Validations.Update.class},
             message = "Id debe ser mayor que cero")
+    // @NotNull: Valida que el valor no sea nulo
+    // - Creación
+    // - Actualización
     @NotNull(groups = {Validations.Save.class, Validations.Update.class},
             message = "Id no debe ser nulo")
     private Long id;

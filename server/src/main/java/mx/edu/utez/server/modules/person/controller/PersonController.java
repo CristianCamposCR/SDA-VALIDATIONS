@@ -22,7 +22,7 @@ public class PersonController {
     @PostMapping("/")
     public ResponseEntity<CustomResponse<?>> save(
             @Validated({Validations.Save.class}) @RequestBody PersonDto personDto) {
-        CustomResponse<?> res = this.personService.save(personDto.getPerson());
+        CustomResponse<?> res = this.personService.save(personDto.getPersonEntity());
         return new ResponseEntity<>(res, res.getStatus());
     }
 }
