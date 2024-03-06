@@ -55,11 +55,11 @@ export default {
     return {
       selected: 'validation',
       options: [
-        {value: 'validation', text: 'Formulario A'},
+        {value: 'validation', text: 'Formulario General'},
         {value: 'inputText', text: 'Campo de texto'},
         {value: 'inputNumber', text: 'Campo numérico'},
         {value: 'inputEmail', text: 'Campo de correo'},
-        {value: 'inputMultiSelect', text: 'Campo MultiSelect'},
+        {value: 'inputMultiSelect', text: 'Campo de selección múltiple'},
         {value: 'inputDate', text: 'Campo de fecha'},
         {value: 'inputPassword', text: 'Campo de contraseña'},
         {value: 'inputFile', text: 'Campo de archivo'},
