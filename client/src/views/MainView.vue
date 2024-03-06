@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      selected: 'inputFile',
+      selected: 'validation',
       options: [
         {value: 'validation', text: 'Formulario A'},
         {value: 'inputText', text: 'Campo de texto'},
