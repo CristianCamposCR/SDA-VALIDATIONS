@@ -1,6 +1,20 @@
 <template>
   <div>
 
+    <information :action-validation-msg="[
+      'Las validacion comienza cuando el campo pierde el foco.',
+      'El botón de limpiar reinicia el formulario.',
+      'El formulario se limpia después de ser enviado'
+    ]" :validation-msg="[
+      'El valor del campo es requerido.',
+      'Los caracteres ingresados se convierten a minúsculas.',
+      'No permite dos puntos seguidos.',
+      'No permite espacios en blanco',
+      'Los dominios permitidos son: gmail.com, hotmail.com, yahoo.com, utez.edu.mx',
+      'El formato del correo debe ser válido, entiendase valido a que debe tener un @ y un dominio.',
+      'Los caracteres permitidos son: [ @./*-?\']',
+    ]"/>
+
     <b-card no-body>
       <b-card-header v-b-toggle.collapseValidations>
         <span class="border-bottom text-primary" >Información de validación de un campo de texto</span>
@@ -61,17 +75,7 @@
         </b-form-group>
 
         <!--    message to simulate the sending of the form    -->
-        <div v-if="simulationShow">
-          <div v-if="simulationSend" class="text-success">
-            <strong>¡Enviado!</strong> El formulario ha sido enviado.
-            <p>
-              <small>Nombre:&nbsp; {{ form.name }}</small>
-            </p>
-          </div>
-          <div v-else class="text-secondary">
-            <strong>Cargando...</strong> Espere un momento.
-          </div>
-        </div>
+        <SentForm :simulation-show="simulationShow" :simulation-send="simulationSend"/>
 
 
         <div class="text-right">
@@ -89,9 +93,13 @@
 import Vue from "vue";
 import {useVuelidate} from "@vuelidate/core";
 import {required, alphaNum, helpers, maxLength, minLength, email} from "@vuelidate/validators";
+import Information from "@/components/Information.vue";
+import {onSimulateSend, onSimulateShow} from "@/assets/js/functions";
+import SentForm from "@/components/SentForm.vue";
 
 export default Vue.extend({
   name: "InputEmail",
+  components: {SentForm, Information},
   setup() {
     return {v$: useVuelidate()};
   },
@@ -108,21 +116,17 @@ export default Vue.extend({
     async onSubmit() {
 
       const isFormCorrect = await this.v$.$validate()
-      if (!isFormCorrect) {
-        return
-      }
-
+      if (!isFormCorrect) return
 
       this.simulationShow = true;
       this.simulationSend = false;
-      setTimeout(() => {
-        this.simulationSend = true;
-      }, 1000);
-      setTimeout(() => {
-        this.simulationShow = false;
-      }, 2000);
+      this.simulationSend = await onSimulateSend()
+      this.simulationShow = await onSimulateShow()
+
+      this.onReset()
     },
     onReset() {
+      this.form.name = "";
       this.v$.$reset();
     },
   },
