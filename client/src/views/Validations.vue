@@ -85,9 +85,10 @@
                 type="text"
                 placeholder="admin@localhost.com"
                 required
-                v-model="v$.form.email.$model"
+                v-model.trim="v$.form.email.$model"
                 :state="v$.form.email.$dirty ? !v$.form.email.$error : null"
                 @blur="v$.form.email.$touch()"
+                trim
               />
               <b-form-invalid-feedback
                 v-for="error in v$.form.email.$errors"
@@ -109,6 +110,8 @@
                 v-model="v$.form.phone.$model"
                 :state="v$.form.phone.$dirty ? !v$.form.phone.$error : null"
                 @blur="v$.form.phone.$touch()"
+                maxlength="10"
+                @keypress="onlynumbers"
               />
               <b-form-invalid-feedback
                 v-for="error in v$.form.phone.$errors"
@@ -151,6 +154,29 @@
               </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
+
+          <b-col cols="12" sm="12" md="4">
+            <b-form-group>
+              <label>NSS:</label>
+              <b-form-input
+                id="nss"
+                type="text"
+                placeholder="NSS"
+                required
+                maxlength="11"
+                @keypress="onlynumbers"
+                v-model="v$.form.nss.$model"
+                :state="v$.form.nss.$dirty ? !v$.form.nss.$error : null"
+                @blur="v$.form.nss.$touch()"
+              />
+              <b-form-invalid-feedback
+                v-for="error in v$.form.nss.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-col>
           <b-col cols="12" sm="12" md="4">
             <b-form-group>
               <label>Genero:&nbsp;<b class="text-danger">*</b></label>
@@ -183,29 +209,34 @@
               </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
-          <b-col cols="12" sm="12" md="4" class="mt-4">
-            <b-form-group>
-              <b-form-checkbox-group
-                id="checkbox-group-1"
-                :options="civilStatus"
-                name="flavour-1"
-              >
-              </b-form-checkbox-group>
-            </b-form-group>
-          </b-col>
           <b-col cols="12" sm="12" md="4">
             <b-form-group>
-              <label for="childrenQuantity"
+              <label for="numberOfSons"
                 >Número de hijos:&nbsp;<b class="text-danger">*</b></label
               >
               <b-form-input
-                id="childrenQuantity"
+                id="numbreOfSons"
                 type="number"
                 placeholder=""
                 required
                 min="0"
-                max="100"
+                max="15"
+                @keypress="onlynumbers"
+                v-model="v$.form.numberOfSons.$model"
+                :state="
+                  v$.form.numberOfSons.$dirty
+                    ? !v$.form.numberOfSons.$error
+                    : null
+                "
+                @blur="v$.form.numberOfSons.$touch()"
+                :disabled="isDisabled"
               />
+              <b-form-invalid-feedback
+                v-for="error in v$.form.numberOfSons.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
           <b-col cols="12" sm="12" md="4">
@@ -215,29 +246,55 @@
               >
               <multi-select
                 id="softskills"
-                placeholder="Selecciona 3 habilidades blandas"
+                :class="{
+                  'is-invalid': v$.form.softskills.$error,
+                  'is-valid': !v$.form.softskills.$invalid,
+                }"
+                v-model="v$.form.softskills.$model"
+                placeholder="Selecciona de 2 a 4 4 habilidades blandas"
                 label="name"
                 :options="softskills"
                 track-by="name"
                 :multiple="true"
-                :taggable="true"
                 selectLabel="Presiona enter para seleccionar"
                 deselectLabel="Presiona enter para eliminar"
                 selectedLabel="Seleccionado"
-                :showNoOptions="false"
-              ></multi-select>
+                @close="v$.form.softskills.$touch()"
+                ><template slot="noResult">No hay resultados</template>
+                <template slot="noOptions"
+                  >No hay opciones</template
+                ></multi-select
+              >
+              <b-form-invalid-feedback
+                v-for="error in v$.form.softskills.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
-          <b-col cols="12" sm="12" md="4">
+          <b-col cols="12" sm="12" md="6" class="mt-2">
+            <label>Estado civil</label>
             <b-form-group>
-              <label for="socialMedia"
-                >Redes sociales:&nbsp;<b class="text-danger">*</b></label
-              >
               <b-form-checkbox-group
                 id="checkbox-group-1"
-                :options="socialNetworks"
+                :options="civilStatus"
                 name="flavour-1"
-              ></b-form-checkbox-group>
+                v-model="v$.form.martialStatus.$model"
+                :state="
+                  v$.form.martialStatus.$dirty
+                    ? !v$.form.martialStatus.$error
+                    : null
+                "
+                @blur="v$.form.martialStatus.$touch()"
+              >
+              </b-form-checkbox-group>
+              <b-form-invalid-feedback
+                v-for="error in v$.form.martialStatus.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-col>
         </b-row>
@@ -249,6 +306,7 @@
 import Vue from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import moment from "moment/moment";
+import { signal } from "@/kernel/functions";
 import {
   required,
   email,
@@ -325,84 +383,121 @@ export default Vue.extend({
         numberOfSons: null,
         softskills: null,
         socialNetworks: null,
+        nss: null,
+        martialStatus: null,
       },
+      isDisabled: true,
     };
   },
-  validations: {
-    form: {
-      name: {
-        required: helpers.withMessage("Campo obligatorio", required),
-        valid: helpers.withMessage(
-          "Campo inválido, solo se aceptan letras y puntos",
-          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
-        ),
-        minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
-        maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
-      },
-      surname: {
-        required: helpers.withMessage("Campo obligatorio", required),
-        valid: helpers.withMessage(
-          "Campo inválido, solo se aceptan letras y puntos",
-          helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
-        ),
-        minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
-        maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
-      },
-      lastname: {
-        valid: helpers.withMessage(
-          "Campo inválido, solo se aceptan letras y puntos",
-          (value) => {
-            if (!value) return true;
-            return /^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/.test(value);
-          }
-        ),
-      },
-      email: {
-        required: helpers.withMessage("Campo obligatorio", required),
-        email: helpers.withMessage("Correo inválido", email),
-      },
-      phone: {
-        required: helpers.withMessage("Campo obligatorio", required),
-        validFormat: helpers.withMessage(
-          "Teléfono inválido",
-          helpers.regex(/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/)
-        ),
-      },
-      birthDate: {
-        required,
-        maxValue: helpers.withMessage("Sobrepasa la fecha máxima", (value) => {
-          // Haciando la conversión y la comparación a mano
-
-          // const año = new Date().getFullYear() - 18;
-          // const mes = String(new Date().getMonth() + 1).padStart(2, "0"); // Sumar 1 al mes porque los meses en JavaScript van de 0 a 11
-          // const día = String(new Date().getDate()).padStart(2, "0");
-          // const fechaFormateada = `${año}-${mes}-${día}`;
-          // return value <= fechaFormateada;
-
-          //Usando la librería de moment
-
-          //Se recomienda el uso de alguna librería para el manejo de fechas, como lo es moment, facilita mucho el trabajo y evita errores
-          //En este caso value es un string de una fecha en formtato "YYYY-MM-DD" y para compararla tendriamos que obtener la fecha actual
-          // y luego formatearla, moment nos evita eso ya que puedo hacer la comparación directa entre el string y un Date
-          return moment(value).isSameOrBefore(
-            new Date(
-              new Date().getFullYear() - 18,
-              new Date().getMonth(),
-              new Date().getDate()
-            )
-          );
-        }),
-      },
-      gender: {
-        required: helpers.withMessage("Campo obligatorio", required),
-      },
-      // civilStatus: {
-      //   required: helpers.withMessage(
-      //     "Campos obligatorio",
-      //     requiredIf(this.gender.id === 1)
-      //   ),
-      // },
+  methods: {
+    onlynumbers(evt) {
+      signal(evt);
     },
+    isCampos() {
+      if (this.form.lastname === "Campos") {
+        this.isDisabled = false;
+        return true;
+      }
+      this.form.numberOfSons = null;
+      this.isDisabled = true;
+      return false;
+    },
+  },
+  validations() {
+    return {
+      form: {
+        name: {
+          required: helpers.withMessage("Campo obligatorio", required),
+          valid: helpers.withMessage(
+            "Campo inválido, solo se aceptan letras y puntos",
+            helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
+          ),
+          minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
+          maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
+        },
+        surname: {
+          required: helpers.withMessage("Campo obligatorio", required),
+          valid: helpers.withMessage(
+            "Campo inválido, solo se aceptan letras y puntos",
+            helpers.regex(/^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/)
+          ),
+          minLength: helpers.withMessage("Mínimo 3 caracteres", minLength(3)),
+          maxLength: helpers.withMessage("Máximo 50 caracteres", maxLength(50)),
+        },
+        lastname: {
+          valid: helpers.withMessage(
+            "Campo inválido, solo se aceptan letras y puntos",
+            (value) => {
+              if (!value) return true;
+              return /^[a-zA-Z ÁÉÍÓÚáéíóúñÑäëïöü\. \s]+$/.test(value);
+            }
+          ),
+        },
+        email: {
+          required: helpers.withMessage("Campo obligatorio", required),
+          email: helpers.withMessage("Correo inválido", email),
+        },
+        phone: {
+          required: helpers.withMessage("Campo obligatorio", required),
+          validFormat: helpers.withMessage(
+            "Teléfono inválido",
+            helpers.regex(/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/)
+          ),
+        },
+        birthDate: {
+          required,
+          maxValue: helpers.withMessage(
+            "Sobrepasa la fecha máxima",
+            (value) => {
+              // Haciando la conversión y la comparación a mano
+
+              // const año = new Date().getFullYear() - 18;
+              // const mes = String(new Date().getMonth() + 1).padStart(2, "0"); // Sumar 1 al mes porque los meses en JavaScript van de 0 a 11
+              // const día = String(new Date().getDate()).padStart(2, "0");
+              // const fechaFormateada = `${año}-${mes}-${día}`;
+              // return value <= fechaFormateada;
+
+              //Usando la librería de moment
+
+              //Se recomienda el uso de alguna librería para el manejo de fechas, como lo es moment, facilita mucho el trabajo y evita errores
+              //En este caso value es un string de una fecha en formtato "YYYY-MM-DD" y para compararla tendriamos que obtener la fecha actual
+              // y luego formatearla, moment nos evita eso ya que puedo hacer la comparación directa entre el string y un Date
+              return moment(value).isSameOrBefore(
+                new Date(
+                  new Date().getFullYear() - 18,
+                  new Date().getMonth(),
+                  new Date().getDate()
+                )
+              );
+            }
+          ),
+        },
+        gender: {
+          required: helpers.withMessage("Campo obligatorio", required),
+        },
+        softskills: {
+          required: helpers.withMessage("Campo obligatorio", required),
+          minLength: helpers.withMessage("Selecciona mínimo 2", minLength(2)),
+          maxLength: helpers.withMessage("Seleciona máximo 4", maxLength(4)),
+        },
+        numberOfSons: {
+          requiredIfLastname: helpers.withMessage(
+            "Campo requerido",
+            requiredIf(this.isCampos())
+          ),
+          maxValue: helpers.withMessage("El valor máximo es 15", maxValue(15)),
+        },
+        nss: {
+          valid: helpers.withMessage(
+            "Campo inválido",
+            helpers.regex(/^(\d{2})(\d{2})(\d{2})\d{5}$/)
+          ),
+        },
+        martialStatus: {
+          required: helpers.withMessage("Campo obligatorio", required),
+        },
+      },
+    };
   },
 });
 </script>
