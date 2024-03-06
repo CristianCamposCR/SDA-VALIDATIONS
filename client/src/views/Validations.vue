@@ -278,8 +278,8 @@
             <b-form-group>
               <b-form-checkbox-group
                 id="checkbox-group-1"
-                :options="civilStatus"
-                name="flavour-1"
+                :options="martialStatusList"
+                name="martialStatus"
                 v-model="v$.form.martialStatus.$model"
                 :state="
                   v$.form.martialStatus.$dirty
@@ -292,6 +292,11 @@
               <b-form-invalid-feedback
                 v-for="error in v$.form.martialStatus.$errors"
                 :key="error.$uid"
+                :state="
+                  v$.form.martialStatus.$dirty
+                    ? !v$.form.martialStatus.$error
+                    : null
+                "
               >
                 {{ error.$message }}
               </b-form-invalid-feedback>
@@ -336,11 +341,10 @@ export default Vue.extend({
         { name: "Masculino", id: 1 },
         { name: "Femenino", id: 2 },
       ],
-      civilStatus: [
+      martialStatusList: [
         {
           text: "Soltero/a",
           value: "Soltero",
-          notEnabled: true,
         },
         { text: "Casado/a", value: "Casado" },
         { text: "Divorciado/a", value: "Divorciado" },
@@ -384,7 +388,7 @@ export default Vue.extend({
         softskills: null,
         socialNetworks: null,
         nss: null,
-        martialStatus: null,
+        martialStatus: [],
       },
       isDisabled: true,
     };
