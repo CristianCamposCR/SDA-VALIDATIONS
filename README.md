@@ -17,13 +17,13 @@ Also, the validation of the fields is done in the backend with the hibernate val
 
 - `General form`: It is a simple form with some validations using the Vuelidate library with diverse fields.
     - This form has consume a backend to validate the fields and assuring the data is correct.
-- `Field text`: It is a simple text field with some validations.
-- `Field email`: It is a simple email field with some validations.
-- `Field password`: It is a simple password field with some validations.
-- `Field number`: It is a simple number field with some validations.
-- `Field date`: It is a simple date field with some validations.
-- `Field multiselect`: It is a simple multi-select field with some validations.
-- `Field file`: It is a simple file field with some validations.
+- `Field text`: It has some validations like required, min and max length.
+- `Field email`: It has some validations like required and email format.
+- `Field password`: It has some validations like required, min and max length, confirm password and password strength.
+- `Field number`: It has some validations like required, numbers only, number integer and number decimal.
+- `Field date`: It  has some validation, like required and date format, the date min and max.
+- `Field multiselect`: It has some validations like required and only two options selected.
+- `Field file`: It has some validations like required and only image files, dimensions and size.
 
 ### 📕 How was the implementation in the frontend?
 
@@ -65,30 +65,19 @@ validations()
 - In the DTO (Data Transfer Object) was used the Hibernate Validator to validate the fields.
 - In the DTO was used the annotations to validate the fields. Example:
 
-```javascript
+```java
 @NotNull(message = "The name is required", groups = {Create.class})
-private
-String
-name;
+private String name;
 ```
 
 - In the controller was used the annotation `@Validate({Class.interface.class})` to validate the fields. Example:
 
-```javascript
+```java
 @PostMapping("/")
-public
-ResponseEntity < CustomResponse < ?
->>
-save(
-    @Validated({Validations.Save.class}) @RequestBody
-PersonDto
-personDto
-)
-{
-    CustomResponse < ?
->
-    res = this.personService.save(personDto.getPersonEntity());
-    return new ResponseEntity < > (res, res.getStatus());
+public ResponseEntity<CustomResponse<?>> save(
+        @Validated({Validations.Save.class}) @RequestBody PersonDto personDto) {
+  CustomResponse<?> res = this.personService.save(personDto.getPersonEntity());
+  return new ResponseEntity<>(res, res.getStatus());
 }
 ```
 
