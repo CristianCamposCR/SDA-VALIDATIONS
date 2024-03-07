@@ -100,21 +100,25 @@
           </b-col>
           <b-col cols="12" sm="12" md="4">
             <b-form-group>
-              <label for="phone"
+              <label for="phoneNumber"
                 >Teléfono:&nbsp;<b class="text-danger">*</b></label
               >
               <b-form-input
-                id="phone"
+                id="phoneNumber"
                 type="text"
                 placeholder="777-777-7777"
-                v-model="v$.form.phone.$model"
-                :state="v$.form.phone.$dirty ? !v$.form.phone.$error : null"
-                @blur="v$.form.phone.$touch()"
+                v-model="v$.form.phoneNumber.$model"
+                :state="
+                  v$.form.phoneNumber.$dirty
+                    ? !v$.form.phoneNumber.$error
+                    : null
+                "
+                @blur="v$.form.phoneNumber.$touch()"
                 maxlength="10"
                 @keypress="onlynumbers"
               />
               <b-form-invalid-feedback
-                v-for="error in v$.form.phone.$errors"
+                v-for="error in v$.form.phoneNumber.$errors"
                 :key="error.$uid"
               >
                 {{ error.$message }}
@@ -131,11 +135,11 @@
                 class="mb-2"
                 placeholder="Selecciona una fecha"
                 :label-help="null"
-                v-model="v$.form.birthDate.$model"
+                v-model="v$.form.birthday.$model"
                 :state="
-                  v$.form.birthDate.$dirty ? !v$.form.birthDate.$error : null
+                  v$.form.birthday.$dirty ? !v$.form.birthday.$error : null
                 "
-                @blur="v$.form.birthDate.$touch()"
+                @blur="v$.form.birthday.$touch()"
                 label-current-month="Fecha máxima"
                 hide-header
                 :date-format-options="{
@@ -144,10 +148,10 @@
                   day: 'numeric',
                 }"
                 :max="maxDate"
-                @hide="v$.form.birthDate.$touch()"
+                @hide="v$.form.birthday.$touch()"
               ></b-form-datepicker>
               <b-form-invalid-feedback
-                v-for="error in v$.form.birthDate.$errors"
+                v-for="error in v$.form.birthday.$errors"
                 :key="error.$uid"
               >
                 {{ error.$message }}
@@ -168,6 +172,7 @@
                 v-model="v$.form.nss.$model"
                 :state="v$.form.nss.$dirty ? !v$.form.nss.$error : null"
                 @blur="v$.form.nss.$touch()"
+                :disabled="isDisabled"
               />
               <b-form-invalid-feedback
                 v-for="error in v$.form.nss.$errors"
@@ -182,10 +187,10 @@
               <label>Genero:&nbsp;<b class="text-danger">*</b></label>
               <multi-select
                 :class="{
-                  'is-invalid': v$.form.gender.$error,
-                  'is-valid': !v$.form.gender.$invalid,
+                  'is-invalid': v$.form.genre.$error,
+                  'is-valid': !v$.form.genre.$invalid,
                 }"
-                v-model="v$.form.gender.$model"
+                v-model="v$.form.genre.$model"
                 placeholder="Selecciona un género"
                 label="name"
                 :options="genders"
@@ -194,7 +199,7 @@
                 selectLabel="Presiona enter para seleccionar"
                 deselectLabel="Presiona enter para eliminar"
                 selectedLabel="Seleccionado"
-                @close="v$.form.gender.$touch()"
+                @close="v$.form.genre.$touch()"
               >
                 <template slot="noResult">No hay resultados</template>
                 <template slot="noOptions"
@@ -202,7 +207,7 @@
                 ></multi-select
               >
               <b-form-invalid-feedback
-                v-for="error in v$.form.gender.$errors"
+                v-for="error in v$.form.genre.$errors"
                 :key="error.$uid"
               >
                 {{ error.$message }}
@@ -220,7 +225,7 @@
                 placeholder=""
                 required
                 min="0"
-                max="15"
+                max="5"
                 @keypress="onlynumbers"
                 v-model="v$.form.numberOfSons.$model"
                 :state="
@@ -229,7 +234,6 @@
                     : null
                 "
                 @blur="v$.form.numberOfSons.$touch()"
-                :disabled="isDisabled"
               />
               <b-form-invalid-feedback
                 v-for="error in v$.form.numberOfSons.$errors"
@@ -247,10 +251,10 @@
               <multi-select
                 id="softskills"
                 :class="{
-                  'is-invalid': v$.form.softskills.$error,
-                  'is-valid': !v$.form.softskills.$invalid,
+                  'is-invalid': v$.form.softSkills.$error,
+                  'is-valid': !v$.form.softSkills.$invalid,
                 }"
-                v-model="v$.form.softskills.$model"
+                v-model="v$.form.softSkills.$model"
                 placeholder="Selecciona de 2 a 4 4 habilidades blandas"
                 label="name"
                 :options="softskills"
@@ -259,14 +263,14 @@
                 selectLabel="Presiona enter para seleccionar"
                 deselectLabel="Presiona enter para eliminar"
                 selectedLabel="Seleccionado"
-                @close="v$.form.softskills.$touch()"
+                @close="v$.form.softSkills.$touch()"
                 ><template slot="noResult">No hay resultados</template>
                 <template slot="noOptions"
                   >No hay opciones</template
                 ></multi-select
               >
               <b-form-invalid-feedback
-                v-for="error in v$.form.softskills.$errors"
+                v-for="error in v$.form.softSkills.$errors"
                 :key="error.$uid"
               >
                 {{ error.$message }}
@@ -276,19 +280,21 @@
           <b-col cols="12" sm="12" md="6" class="mt-2">
             <label>Estado civil</label>
             <b-form-group>
-              <b-form-checkbox-group
-                id="checkbox-group-1"
-                :options="martialStatusList"
+              <b-form-checkbox
+                v-for="opc in martialStatusList"
+                :key="opc.id"
                 name="martialStatus"
-                v-model="v$.form.martialStatus.$model"
+                v-model="form.martialStatus"
                 :state="
                   v$.form.martialStatus.$dirty
                     ? !v$.form.martialStatus.$error
                     : null
                 "
-                @blur="v$.form.martialStatus.$touch()"
+                :value="opc.value"
+                inline
               >
-              </b-form-checkbox-group>
+                {{ opc.text }}
+              </b-form-checkbox>
               <b-form-invalid-feedback
                 v-for="error in v$.form.martialStatus.$errors"
                 :key="error.$uid"
@@ -304,6 +310,13 @@
           </b-col>
         </b-row>
       </b-form>
+      <b-row class="justify-content-end">
+        <b-col sm="auto" class="text-end">
+          <b-button @click="save" variant="success" :disabled="false"
+            >Guardar</b-button
+          >
+        </b-col>
+      </b-row>
     </b-container>
   </div>
 </template>
@@ -322,6 +335,8 @@ import {
   minValue,
   maxValue,
 } from "@vuelidate/validators";
+import Axios from "axios";
+import personService from "@/services/Person";
 export default Vue.extend({
   name: "validations",
   setup() {
@@ -344,11 +359,11 @@ export default Vue.extend({
       martialStatusList: [
         {
           text: "Soltero/a",
-          value: "Soltero",
+          value: "1",
         },
-        { text: "Casado/a", value: "Casado" },
-        { text: "Divorciado/a", value: "Divorciado" },
-        { text: "Viudo/a", value: "Viudo" },
+        { text: "Casado/a", value: "2" },
+        { text: "Divorciado/a", value: "3" },
+        { text: "Viudo/a", value: "4" },
       ],
       softskills: [
         { name: "Lidesrazgo", id: 1 },
@@ -375,20 +390,33 @@ export default Vue.extend({
         { text: "Reddit", value: 9 },
         { text: "WhatsApp", value: 10 },
       ],
+      defaultForm: {
+        name: null,
+        surname: null,
+        lastname: null,
+        email: null,
+        phoneNumber: null,
+        birthday: null,
+        genre: null,
+        numberOfSons: null,
+        softSkills: null,
+        nss: null,
+        martialStatus: null,
+        status: true,
+      },
       form: {
         name: null,
         surname: null,
         lastname: null,
         email: null,
-        phone: null,
-        birthDate: null,
-        gender: null,
-        civilStatus: null,
+        phoneNumber: null,
+        birthday: null,
+        genre: null,
         numberOfSons: null,
-        softskills: null,
-        socialNetworks: null,
+        softSkills: null,
         nss: null,
-        martialStatus: [],
+        martialStatus: null,
+        status: true,
       },
       isDisabled: true,
     };
@@ -402,9 +430,63 @@ export default Vue.extend({
         this.isDisabled = false;
         return true;
       }
-      this.form.numberOfSons = null;
+      this.form.nss = null;
       this.isDisabled = true;
       return false;
+    },
+    save() {
+      this.$swal
+        .fire({
+          title: "¿Seguro que desea realizar la acción?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+        })
+        .then(async (result) => {
+          try {
+            if (result.isConfirmed) {
+              const payload = {
+                ...this.form,
+                genre: null,
+                martialStatus: { id: this.form.martialStatus },
+                softSkills: JSON.stringify(this.form.softSkills),
+              };
+              const response = await personService.savePerson(payload);
+              if (!response.error) {
+                this.$swal.fire({
+                  title: "Éxito",
+                  icon: "success",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "Aceptar",
+                });
+              } else {
+                console.log("else", response);
+                this.$swal.fire({
+                  title: "Error",
+                  text: `Los errores son: ${response.data}`,
+                  icon: "error",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "Aceptar",
+                });
+              }
+            }
+          } catch (error) {
+            this.$swal.fire({
+              title: "Error",
+              text: `${error}`,
+              icon: "error",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "Aceptar",
+            });
+          } finally {
+            this.form = { ...this.defaultForm };
+            this.v$.$reset();
+          }
+        });
     },
   },
   validations() {
@@ -441,14 +523,14 @@ export default Vue.extend({
           required: helpers.withMessage("Campo obligatorio", required),
           email: helpers.withMessage("Correo inválido", email),
         },
-        phone: {
+        phoneNumber: {
           required: helpers.withMessage("Campo obligatorio", required),
           validFormat: helpers.withMessage(
             "Teléfono inválido",
             helpers.regex(/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/)
           ),
         },
-        birthDate: {
+        birthday: {
           required,
           maxValue: helpers.withMessage(
             "Sobrepasa la fecha máxima",
@@ -476,29 +558,33 @@ export default Vue.extend({
             }
           ),
         },
-        gender: {
+        genre: {
           required: helpers.withMessage("Campo obligatorio", required),
         },
-        softskills: {
+        softSkills: {
           required: helpers.withMessage("Campo obligatorio", required),
           minLength: helpers.withMessage("Selecciona mínimo 2", minLength(2)),
           maxLength: helpers.withMessage("Seleciona máximo 4", maxLength(4)),
         },
         numberOfSons: {
+          requiredIfLastname: helpers.withMessage("Campo requerido", required),
+          maxValue: helpers.withMessage("El valor máximo es 5", maxValue(5)),
+        },
+        nss: {
           requiredIfLastname: helpers.withMessage(
             "Campo requerido",
             requiredIf(this.isCampos())
           ),
-          maxValue: helpers.withMessage("El valor máximo es 15", maxValue(15)),
-        },
-        nss: {
           valid: helpers.withMessage(
             "Campo inválido",
             helpers.regex(/^(\d{2})(\d{2})(\d{2})\d{5}$/)
           ),
         },
         martialStatus: {
-          required: helpers.withMessage("Campo obligatorio", required),
+          required: helpers.withMessage("Campo obligatorio", (value) => {
+            if (value === false) return false;
+            else return true;
+          }),
         },
       },
     };
