@@ -29,7 +29,7 @@ public class Person {
     private String lastname;
 
     @Column(columnDefinition = "DATE", nullable = false)
-    private LocalDate birthDay;
+    private LocalDate birthday;
 
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private String phoneNumber;

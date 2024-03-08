@@ -106,7 +106,7 @@
               <b-form-input
                 id="phoneNumber"
                 type="text"
-                placeholder="777-777-7777"
+                placeholder="7771112233"
                 v-model="v$.form.phoneNumber.$model"
                 :state="
                   v$.form.phoneNumber.$dirty
@@ -159,12 +159,13 @@
             </b-form-group>
           </b-col>
 
-          <b-col cols="12" sm="12" md="4">
+          <b-col cols="12" sm="12" md="4"
+            v-b-tooltip.hover.top="'Escribe \'Campos\' en el Segundo apellido para activar.'">
             <b-form-group>
               <label>NSS:</label>
               <b-form-input
                 id="nss"
-                type="text"
+                type="number"
                 placeholder="NSS"
                 required
                 maxlength="11"
@@ -184,8 +185,9 @@
           </b-col>
           <b-col cols="12" sm="12" md="4">
             <b-form-group>
-              <label>Genero:&nbsp;<b class="text-danger">*</b></label>
+              <label for="genre">Genero:&nbsp;<b class="text-danger">*</b></label>
               <multi-select
+                id="genre"
                 :class="{
                   'is-invalid': v$.form.genre.$error,
                   'is-valid': !v$.form.genre.$invalid,
@@ -222,7 +224,7 @@
               <b-form-input
                 id="numbreOfSons"
                 type="number"
-                placeholder=""
+                placeholder="0"
                 required
                 min="0"
                 max="5"
@@ -378,18 +380,6 @@ export default Vue.extend({
         { name: "Negociación", id: 10 },
         { name: "Toma de decisiones", id: 11 },
       ],
-      socialNetworks: [
-        { text: "Facebook", value: 1 },
-        { text: "Instagram", value: 2 },
-        { text: "Twitter", value: 3 },
-        { text: "LinkedIn", value: 4 },
-        { text: "YouTube", value: 5 },
-        { text: "TikTok", value: 6 },
-        { text: "Pinterest", value: 7 },
-        { text: "Snapchat", value: 8 },
-        { text: "Reddit", value: 9 },
-        { text: "WhatsApp", value: 10 },
-      ],
       defaultForm: {
         name: null,
         surname: null,
@@ -451,7 +441,7 @@ export default Vue.extend({
             if (result.isConfirmed) {
               const payload = {
                 ...this.form,
-                genre: null,
+                genre: { id: this.form.genre.id },
                 martialStatus: { id: this.form.martialStatus },
                 softSkills: JSON.stringify(this.form.softSkills),
               };
