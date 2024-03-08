@@ -13,6 +13,56 @@ This is a simple project to validate the use of the Vue 2 framework with Vite. I
 using the Vuelidate library for user interface.
 Also, the validation of the fields is done in the backend with the hibernate validator.
 
+## 💻 Installation
+
+### Backend (Spring Boot)
+
+1. Clone the repository to your local machine:
+
+```bash
+git clone https://github.com/CristianCamposCR/SDA-VALIDATIONS.git
+```
+
+2. Open the project in IntelliJ IDEA or your preferred IDE.
+
+3. Navigate to the application.properties file located in the src/main/resources directory.
+
+4. Update the database connection configuration according to your local setup.
+
+5. Start the Spring Boot service.
+
+### Frontend (Vue.js)
+
+1. Navigate to the client directory within your project:
+
+``` bash
+cd SDA-VALIDATIONS/client
+```
+
+2. Install the dependencies
+
+```bash
+npm i
+```
+
+3. Create a .env file at the root of the client directory and add the following environment variable:
+
+```bash
+VITE_APP_BASE_URL=http://localhost:8080/api
+```
+This environment variable points to the base URL of your Spring Boot API.
+
+4. Start the Vue.js development server:
+
+```bash
+npm run dev
+```
+
+5. Once the development server is running, you can access the application in your web browser at http://localhost:5173.
+
+6. Try out the fields validation example.
+
+
 ## ⚒️Features
 
 - `General form`: It is a simple form with some validations using the Vuelidate library with diverse fields.
